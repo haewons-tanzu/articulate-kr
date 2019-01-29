@@ -1,0 +1,149 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/layout :: head">
+
+</head>
+
+<body>
+
+	<nav th:replace="fragments/layout :: navigation"></nav>
+
+	<!--  PAGE BODY -->
+	<div class="container" role="main">
+
+		<span id="tutorialName" style="display: none;">bluegreen</span>
+
+		<div class="row ">
+			<div class="page-header">
+				<p>&nbsp;</p>
+				<h1>Blue-Green Deployment</h1>
+			</div>
+		</div>
+
+		<div class="row ">
+
+			<div class="col-md-6">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div id="bluegreenBlock">
+							<p>다운타임을 최소화 하면서 애플리케이션을 업그레이드하는 것이 얼마나 어려운가요?</p>
+							<p>
+								이 페이지는 라우트 매핑을 기반으로 애플리케이션 간의 로드 밸런싱을 보여줍니다.
+								<a data-toggle="collapse" data-parent="#accordion"
+									href="#collapseOne">자세한 설명을 참조하십시오</a>.
+							</p>
+						</div>
+						<div id="donut-example" style="height: 250px;"></div>
+					</div>
+					<div class="panel-footer clearfix">
+						<div class="pull-right">
+							<a href="javascript:startTimer();" class="btn btn-default">시작</a>
+							<a href="javascript:reset();" class="btn btn-default">리셋</a>
+							<a href="javascript:stopTimer();" class="btn btn-default">정지</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div th:replace="fragments/layout :: tutorial2"></div>
+			</div>
+
+		</div>
+		<!--  ROW -->
+
+	</div>
+
+	<script>
+		var INTERVAL = 1000
+		var timerID = 0;
+		var versions = {};
+		var startTime;
+
+		var colors = [ "#90A6D4", "#90D49C" ];
+
+		var chartData = [ {
+			label : "blue",
+			value : 10
+		}, {
+			label : "green",
+			value : 1
+		} ]
+
+		var chart = Morris.Donut({
+			element : 'donut-example',
+			colors : colors,
+			data : chartData,
+			resize : true
+		});
+
+		function startTimer() {
+			timerID = setInterval(startLoad, INTERVAL);
+		}
+
+		function stopTimer() {
+			if (timerID)
+				clearInterval(timerID);
+		}
+		
+		function reset() {
+			updateScreen(true);
+
+		}
+		
+		function startLoad() {
+
+			$.get("/bluegreen-check", function(appName) {
+
+				if (appName in versions) {
+					versions[appName] = 1 + versions[appName];
+				} else {
+					versions[appName] = 1;
+				}
+
+				updateScreen(false);
+			});
+
+		}
+		function updateScreen(resetCounts) {
+			var html = '';
+
+			chartData = [];
+
+			// MMB: This can be templated instead of creating HTML in the function
+			var i = 2;
+			var color;
+			for ( var version in versions) {
+				if(resetCounts)
+					versions[version] = 0
+					
+				html += '<p><b><span style="color:' + colors[i % 2] + '">'
+						+ version + '</span></b> - ' + versions[version]
+						+ '</p>'
+
+				i++;
+
+				item = {};
+				item.label = version;
+				item.value = versions[version];
+				chartData.push(item);
+			}
+
+			chart.setData(chartData);
+
+			$('#bluegreenBlock').html(html);				
+		}
+
+	</script>
+
+	<!--  /.PAGE BODY -->
+
+	<footer th:replace="fragments/layout :: footer" class="footer">
+	</footer>
+
+	<script th:replace="fragments/layout :: app-instance-script"></script>
+
+</body>
+
+</html>
