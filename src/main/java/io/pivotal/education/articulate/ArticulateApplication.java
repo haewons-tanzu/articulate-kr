@@ -23,9 +23,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 
-/**
- * @author mborges
- */
 @SpringBootApplication
 @EnableCircuitBreaker
 public class ArticulateApplication {
