@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: articulate-kr
+  name: articulate-kr
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: articulate-kr
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: articulate-kr
+    spec:
+      containers:
+      - image: hwshin16/articulate-kr:latest
+        name: articulate-kr
