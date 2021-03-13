@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: k8sapp
+  name: k8sapp
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: articulate-kr
+  type: LoadBalancer
